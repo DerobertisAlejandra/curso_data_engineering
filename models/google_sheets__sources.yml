@@ -1,6 +1,5 @@
 sources:
-
-  - name: google_sheets # name of the source 
+  - name: google_sheets # name of the source
     schema: google_sheets # this is the schema our raw data lives in
     database: ALUMNO30_DEV_BRONZE_DB # this is the name of our database
 
@@ -9,12 +8,8 @@ sources:
       schema: false
       identifier: false
 
-    freshness:
-      warn_after: {count: 24, period: hour}
-      error_after: {count: 48, period: hour}
 
     tables:
-
       - name: budget
         loaded_at_field: _fivetran_synced
         columns:
