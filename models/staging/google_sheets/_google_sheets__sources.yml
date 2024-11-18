@@ -1,3 +1,4 @@
+version: 2
 sources:
   - name: google_sheets # name of the source
     schema: google_sheets # this is the schema our raw data lives in
@@ -7,6 +8,10 @@ sources:
       database: false
       schema: false
       identifier: false
+
+    freshness:
+      warn_after: {count: 15, period: day}
+      error_after: {count: 25, period: day}
 
 
     tables:

@@ -1,3 +1,4 @@
+version: 2
 sources:
   - name: sql_server_dbo # name of the source
     schema: sql_server_dbo # this is the schema our raw data lives in
@@ -8,6 +9,9 @@ sources:
       schema: false
       identifier: false
 
+    freshness:
+      warn_after: {count: 15, period: day}
+      error_after: {count: 25, period: day}
 
     tables:
       - name: addresses
