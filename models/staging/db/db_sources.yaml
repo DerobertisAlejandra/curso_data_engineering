@@ -1,0 +1,16 @@
+version: 2
+
+sources:
+
+  - name: db # name of the source 
+    schema: db # this is the schema our raw data lives in
+    database: ALUMNO30_DEV_BRONZE_DB # this is the name of our database
+
+    tables:
+
+      - name: users
+        columns:
+          - name: Nombre
+          - name: DNI
+          - name: email
+          - name: fecha_alta_sistema

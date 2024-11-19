@@ -1,23 +1,16 @@
+{{ config(materialized="view") }}
 
-{{
-  config(
-    materialized='view'
-  )
-}}
+with
+    promos_raw as (select * from {{ source("sql_server_dbo", "promos") }}),
 
-WITH src_promos AS (
-    SELECT * 
-    FROM {{ source('sql_server_dbo', 'promos') }}
-    ),
-
-renamed_promos_init AS (
-    SELECT
-          discount
-        , promo_id
-        , status
-        , _fivetran_deleted
-        , _fivetran_synced AS date_load
-    FROM src_promos
+    filterd_promos as (
+        select
+            md5(promo_id) as promo_id,
+            discount as discount_value,
+            status as promo_status,
+            convert_timezone('UTC', _fivetran_synced) as sinced_timestamp_utc
+        from promos_raw
     )
 
-SELECT * FROM renamed_promos_init
+select *
+from promos_raw
