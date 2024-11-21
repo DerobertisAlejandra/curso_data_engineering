@@ -1,0 +1,211 @@
+version: 2
+
+models:
+  - name: dim_users
+    description: "Tabla dimensional de usuarios"
+    columns:
+      - name: user_id
+        description: "Identificador único de usuario"
+        tests:
+          - unique
+          - not_null
+      - name: first_name
+        description: "Nombre del usuario"
+      - name: last_name
+        description: "Apellido del usuario"
+      - name: email
+        description: "Correo electrónico del usuario"
+      - name: phone_number
+        description: "Número de teléfono del usuario"
+      - name: created_at
+        description: "Fecha de creación del usuario"
+      - name: updated_at
+        description: "Fecha de última actualización del usuario"
+
+
+  - name: dim_products
+    description: "Tabla dimensional de productos"
+    columns:
+      - name: product_id
+        description: "Clave primaria del producto"
+        tests:
+          - unique
+          - not_null
+      - name: price
+        description: "Precio del producto"
+      - name: name
+        description: "Nombre del producto"
+      - name: inventory
+        description: "Inventario disponible"
+
+
+  - name: dim_addresses
+    description: "Tabla dimensional de direcciones"
+    columns:
+      - name: address_id
+        description: "Identificador único de dirección"
+        tests:
+          - unique
+          - not_null
+      - name: zipcode
+        description: "Código postal"
+      - name: country
+        description: "País"
+      - name: address
+        description: "Dirección"
+      - name: state
+        description: "Estado"
+
+
+  - name: dim_promos
+    description: "Tabla dimensional de promociones"
+    columns:
+      - name: promo_id
+        description: "Identificador único de promoción"
+        tests:
+          - unique
+          - not_null
+      - name: discount
+        description: "Descuento"
+      - name: status
+        description: "Estado"
+      - name: synced_timestamp_utc
+        description: "Fecha de sincronización en UTC"
+
+
+  - name: dim_budget
+    description: "Tabla dimensional de presupuesto"
+    columns:
+      - name: budget_id
+        description: "Identificador único de presupuesto"
+        tests:
+          - unique
+          - not_null
+      - name: product_id
+        description: "Identificador del producto"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_products')
+              field: product_id
+      - name: budget_date
+        description: "Fecha del presupuesto"
+      - name: quantity
+        description: "Cantidad presupuestada"
+
+
+  - name: fact_orders
+    description: "Tabla de hechos de órdenes"
+    columns:
+      - name: order_id
+        description: "Identificador único de la orden"
+        tests:
+          - unique
+          - not_null
+      - name: user_id
+        description: "Identificador del usuario"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_users')
+              field: user_id
+      - name: address_id
+        description: "Identificador de la dirección"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_addresses')
+              field: address_id
+      - name: promo_id
+        description: "Identificador de la promoción"
+        tests:
+          - relationships:
+              to: ref('dim_promos')
+              field: promo_id
+      - name: created_at
+        description: "Fecha de creación de la orden"
+      - name: estimated_delivery_at
+        description: "Fecha estimada de entrega"
+      - name: delivered_at
+        description: "Fecha de entrega"
+      - name: order_cost
+        description: "Costo de la orden"
+      - name: order_total
+        description: "Total de la orden"
+      - name: shipping_cost
+        description: "Costo de envío"
+      - name: shipping_service
+        description: "Servicio de envío"
+      - name: tracking_id
+        description: "ID de seguimiento"
+      - name: status
+        description: "Estado de la orden"
+      - name: order_date
+        description: "Fecha de la orden"
+
+
+  - name: fact_order_items
+    description: "Tabla de hechos de ítems de órdenes"
+    columns:
+      - name: order_item_id
+        description: "Identificador único del ítem de la orden"
+        tests:
+          - unique
+          - not_null
+      - name: order_id
+        description: "Identificador de la orden"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('fact_orders')
+              field: order_id
+      - name: product_id
+        description: "Identificador del producto"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_products')
+              field: product_id
+      - name: quantity
+        description: "Cantidad de producto"
+      - name: created_at
+        description: "Fecha de creación del ítem de la orden"
+
+
+  - name: fact_events
+    description: "Tabla de hechos de eventos"
+    columns:
+      - name: event_id
+        description: "Identificador único del evento"
+        tests:
+          - unique
+          - not_null
+      - name: page_url
+        description: "URL de la página"
+      - name: event_type
+        description: "Tipo de evento"
+      - name: user_id
+        description: "Identificador del usuario"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_users')
+              field: user_id
+      - name: product_id
+        description: "Identificador del producto"
+        tests:
+          - relationships:
+              to: ref('dim_products')
+              field: product_id
+      - name: session_id
+        description: "ID de la sesión"
+      - name: created_at
+        description: "Fecha de creación del evento"
+      - name: order_id
+        description: "Identificador de la orden"
+        tests:
+          - relationships:
+              to: ref('fact_orders')
+              field: order_id
+      - name: order_date
+        description: "Fecha del evento"
