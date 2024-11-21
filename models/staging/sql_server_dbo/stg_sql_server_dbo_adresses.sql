@@ -33,7 +33,7 @@ validated_addresses AS (
         zipcode IS NOT NULL
         AND country IS NOT NULL
         AND address IS NOT NULL
-        AND state IS NOT NULL  -- Validación de dirección completa
+        AND state IS NOT NULL 
 ),
 
 -- Identificar duplicados basados en address_id y seleccionar solo la fila más reciente
@@ -48,7 +48,7 @@ ranked_addresses AS (
         ROW_NUMBER() OVER (
             PARTITION BY address_id 
             ORDER BY 
-                _fivetran_synced_utc DESC  -- Usar _fivetran_synced para tener la selección del dato más reciente basada en la sincronización
+                _fivetran_synced_utc DESC  
         ) AS row_num
     FROM validated_addresses
 )

@@ -51,7 +51,6 @@ ranked_users AS (
     FROM validated_users
 )
 
--- Seleccionar solo la fila más reciente para cada user_id
 SELECT
     user_id,
     first_name,
