@@ -1,22 +1,18 @@
-{{
-  config(
-    materialized='view'
-  )
-}}
+{{ config(materialized="view") }}
 
-WITH src_budget AS (
-    SELECT * 
-    FROM {{ source('google_sheets', 'budget') }}
+with raw_budget as (
+        select * from {{ source("google_sheets", "budget") }}
     ),
 
-renamed_casted AS (
-    SELECT
-          _row
-        , product_id
-        , quantity
-        , month
-        , _fivetran_synced AS date_load
-    FROM src_budget
+    filtered_budget as (
+        select
+            md5(cast(_row as string)) as budget_id,  -- Verificar si _row existe
+            product_id,
+            quantity,
+            to_char(month, 'YYYY-MM') as budget_date,  -- Extrae año-mes de la fecha
+            convert_timezone('UTC', _fivetran_synced) as synced_utc  -- Ya es TIMESTAMP_TZ, solo convértelo
+        from raw_budget
+        where product_id is not null
     )
 
-SELECT * FROM renamed_casted
+select * from filtered_budget
